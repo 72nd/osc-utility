@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+	"gitlab.com/72th/prfm-osc/src"
 	"os"
 )
 
@@ -23,10 +24,12 @@ func main() {
 				cli.StringFlag{
 					Name:  "host",
 					Usage: "host of the OSC server",
+					Value: "localhost",
 				},
 				cli.IntFlag{
 					Name:  "port, p",
 					Usage: "port of the OSC server",
+					Value: 9000,
 				},
 				cli.StringFlag{
 					Name:  "address, adr, a",
@@ -41,6 +44,10 @@ func main() {
 					Usage: "integer 32 argument (separate multiple by comma)",
 				},
 				cli.StringFlag{
+					Name:  "float, f",
+					Usage: "float 32 argument (separate multiple by comma)",
+				},
+				cli.StringFlag{
 					Name:  "bool, b",
 					Usage: "boolean argument (separate multiple by comma)",
 				},
@@ -52,14 +59,18 @@ func main() {
 			Aliases: []string{"srv", "s"},
 			Usage:   "OSC server on localhost, prints incoming messages",
 			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "host",
+					Usage: "host to run the server on",
+					Value: "127.0.0.1",
+				},
 				cli.IntFlag{
 					Name:  "port, p",
 					Usage: "port number to run the server on",
+					Value: 9000,
 				},
 			},
-			Action: func(c *cli.Context) error {
-				return nil
-			},
+			Action: serverAction,
 		},
 	}
 
@@ -69,21 +80,40 @@ func main() {
 }
 
 func messageAction(c *cli.Context) error {
-	if len(c.Args()) == 0 {
-		_ = cli.ShowCommandHelp(c, c.Command.Name)
-		logrus.Error("need some more information")
+	msg := src.Message{}
+	if c.String("host") == "localhost" {
+		logrus.Info("using default host (localhost)")
 	}
-	if c.String("host") == "" {
-		logrus.Error("no host specified (--host)")
-		return nil
+	msg.Host = c.String("host")
+
+	if c.Int("port") == 9000 {
+		logrus.Info("using default port (9000)")
 	}
-	if c.Int("port") == 0 {
-		logrus.Error("no port specified (--port)")
-		return nil
-	}
+	msg.Port = c.Int("port")
+
 	if c.String("address") == "" {
 		logrus.Error("no address specified (--address)")
 		return nil
 	}
+	msg.Address = c.String("address")
+	msg.SetStrings(c.String("string"))
+	msg.SetIntegers(c.String("int"))
+	msg.SetFloats(c.String("float"))
+	msg.SetBooleans(c.String("bool"))
+	msg.Send()
+	return nil
+}
+
+func serverAction(c *cli.Context) error {
+	srv := src.Server{}
+	srv.Host = c.String("host")
+	if srv.Host == "127.0.0.1" {
+		logrus.Info("using default host (127.0.0.1)")
+	}
+	srv.Port = c.Int("port")
+	if c.Int("port") == 9000 {
+		logrus.Info("using default port (9000)")
+	}
+	srv.Serve()
 	return nil
 }
