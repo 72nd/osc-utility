@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"gitlab.com/72th/prfm-osc/src"
+	"gitlab.com/72th/prfm-osc/pkg"
 	"os"
 )
 
@@ -80,7 +80,7 @@ func main() {
 }
 
 func messageAction(c *cli.Context) error {
-	msg := src.Message{}
+	msg := pkg.Message{}
 	if c.String("host") == "localhost" {
 		logrus.Info("using default host (localhost)")
 	}
@@ -96,16 +96,16 @@ func messageAction(c *cli.Context) error {
 		return nil
 	}
 	msg.Address = c.String("address")
+	msg.SetBooleans(c.String("bool"))
 	msg.SetStrings(c.String("string"))
 	msg.SetIntegers(c.String("int"))
 	msg.SetFloats(c.String("float"))
-	msg.SetBooleans(c.String("bool"))
 	msg.Send()
 	return nil
 }
 
 func serverAction(c *cli.Context) error {
-	srv := src.Server{}
+	srv := pkg.Server{}
 	srv.Host = c.String("host")
 	if srv.Host == "127.0.0.1" {
 		logrus.Info("using default host (127.0.0.1)")

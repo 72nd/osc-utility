@@ -1,4 +1,4 @@
-package src
+package pkg
 
 import (
 	"bufio"
@@ -35,12 +35,15 @@ func serverHandler(msg *osc.Message) {
 	fields := logrus.Fields{
 		"address": msg.Address,
 	}
+	var booleans []bool
 	var strings []string
 	var integers []int32
 	var doubles []int64
 	var floats []float32
 	for _, arg := range msg.Arguments {
 		switch arg.(type) {
+		case bool:
+			booleans = append(booleans, arg.(bool))
 		case string:
 			strings = append(strings, arg.(string))
 		case int32:
@@ -51,7 +54,11 @@ func serverHandler(msg *osc.Message) {
 			floats = append(floats, arg.(float32))
 		}
 	}
+	if len(booleans) != 0 {
+		fields["booleans"] = booleans
+	}
 	if len(strings) != 0 {
+
 		fields["strings"] = strings
 	}
 	if len(integers) != 0 {

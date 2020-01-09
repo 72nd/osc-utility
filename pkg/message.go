@@ -1,4 +1,4 @@
-package src
+package pkg
 
 import (
 	"github.com/hypebeast/go-osc/osc"
@@ -12,7 +12,7 @@ type Message struct {
 	Port     int
 	Address  string
 	Strings  []string
-	Integers []int
+	Integers []int32
 	Floats   []float32
 	Booleans []bool
 }
@@ -31,12 +31,12 @@ func (m *Message) SetIntegers(input string) {
 		return
 	}
 	for _, part := range parts {
-		value, err := strconv.Atoi(part)
+		value, err := strconv.ParseInt(part, 0, 32)
 		if err != nil {
 			logrus.Warnf("argument %s could not be parsed as a int32, ignoring this one", part)
 			continue
 		}
-		m.Integers = append(m.Integers, value)
+		m.Integers = append(m.Integers, int32(value))
 	}
 }
 
@@ -77,13 +77,16 @@ func (m *Message) SetBooleans(input string) {
 func (m *Message) Send() {
 	client := osc.NewClient(m.Host, m.Port)
 	msg := osc.NewMessage(m.Address)
+	for _, value := range m.Booleans {
+		msg.Append(value)
+	}
 	for _, value := range m.Strings {
 		msg.Append(value)
 	}
 	for _, value := range m.Integers {
 		msg.Append(value)
 	}
-	for _, value := range m.Booleans {
+	for _, value := range m.Floats {
 		msg.Append(value)
 	}
 	if err := client.Send(msg); err != nil {
