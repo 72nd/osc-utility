@@ -14,7 +14,7 @@ type Server struct {
 }
 
 func (s *Server) Serve() {
-	d := osc.NewOscDispatcher()
+	d := osc.NewStandardDispatcher()
 	if err := d.AddMsgHandler("*", serverHandler); err != nil {
 		logrus.Error(err)
 	}
