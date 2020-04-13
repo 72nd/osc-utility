@@ -18,10 +18,10 @@ type Message struct {
 }
 
 func (m *Message) SetStrings(input string) {
-	parts := strings.Split(input, ",")
-	if len(parts) == 0 {
+	if input == "" {
 		return
 	}
+	parts := strings.Split(input, ",")
 	m.Strings = parts
 }
 
