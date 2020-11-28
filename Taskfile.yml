@@ -1,0 +1,47 @@
+# https://taskfile.dev
+
+version: '2'
+
+vars:
+    APPLICATION_NAME: osc-utility
+    MAIN_FILE: "main.go"
+
+tasks:
+    commit:
+        desc: Run before committing to github.
+        cmds:
+            - gofmt -s -w .
+    build:
+        desc: Build the binaries for multiple architectures.
+        deps:
+            - commit
+            - build-folder
+        cmds:
+            - task: build-platform
+              vars: {GOOS: "darwin", GOARCH: "amd64"}
+            - task: build-platform
+              vars: {GOOS: "linux", GOARCH: "amd64"}
+            - task: build-platform
+              vars: {GOOS: "linux", GOARCH: "386"}
+            - task: build-platform
+              vars: {GOOS: "linux", GOARCH: "arm"}
+            - task: build-platform
+              vars: {GOOS: "linux", GOARCH: "arm64"}
+            - task: build-platform
+              vars: {GOOS: "windows", GOARCH: "amd64"}
+            - task: build-platform
+              vars: {GOOS: "windows", GOARCH: "386"}
+        silent: true
+    build-folder:
+        desc: Create the output folder for the build.
+        cmds:
+            - mkdir build
+        generates:
+            - build/*
+    build-platform:
+        summary: Build the binary for a given platform.
+        cmds:
+            - go build -o build/{{.APPLICATION_NAME}}_{{.GOOS}}_{{.GOARCH}} {{.MAIN_FILE}}
+        env:
+            GOOS: "{{.GOOS}}"
+            GOARCH: "{{.GOARCH}}"
