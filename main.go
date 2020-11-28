@@ -5,73 +5,80 @@ import (
 
 	"github.com/72nd/osc-utility/src"
 	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "osc-utility"
-	app.Usage = "collection of tools for OSC"
-	app.Action = func(c *cli.Context) error {
-		_ = cli.ShowCommandHelp(c, c.Command.Name)
-		return nil
-	}
-	app.Commands = []cli.Command{
-		{
-			Name:    "message",
-			Aliases: []string{"msg", "m"},
-			Usage:   "send a message to a OSC server",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "host",
-					Usage: "host of the OSC server",
-					Value: "localhost",
-				},
-				cli.IntFlag{
-					Name:  "port, p",
-					Usage: "port of the OSC server",
-					Value: 9000,
-				},
-				cli.StringFlag{
-					Name:  "address, adr, a",
-					Usage: "address of the message",
-				},
-				cli.StringFlag{
-					Name:  "string, str, s",
-					Usage: "string argument (separate multiple by comma)",
-				},
-				cli.StringFlag{
-					Name:  "int, i",
-					Usage: "integer 32 argument (separate multiple by comma)",
-				},
-				cli.StringFlag{
-					Name:  "float, f",
-					Usage: "float 32 argument (separate multiple by comma)",
-				},
-				cli.StringFlag{
-					Name:  "bool, b",
-					Usage: "boolean argument (separate multiple by comma)",
-				},
+	app := &cli.App{
+		Name:  "osc-utility",
+		Usage: "utlity for working with OSC",
+		Authors: []*cli.Author{
+			{
+				Name:  "72nd",
+				Email: "msg@frg72.com",
 			},
-			Action: messageAction,
 		},
-		{
-			Name:    "server",
-			Aliases: []string{"srv", "s"},
-			Usage:   "OSC server on localhost, prints incoming messages",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "host",
-					Usage: "host to run the server on",
-					Value: "127.0.0.1",
+		Action: func(c *cli.Context) error {
+			_ = cli.ShowCommandHelp(c, c.Command.Name)
+			return nil
+		},
+		Commands: []*cli.Command{
+			{
+				Name:    "message",
+				Aliases: []string{"msg", "m"},
+				Usage:   "send a message to a OSC server",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "host",
+						Usage: "host of the OSC server",
+						Value: "localhost",
+					},
+					&cli.IntFlag{
+						Name:  "port, p",
+						Usage: "port of the OSC server",
+						Value: 9000,
+					},
+					&cli.StringFlag{
+						Name:  "address, adr, a",
+						Usage: "address of the message",
+					},
+					&cli.StringFlag{
+						Name:  "string, str, s",
+						Usage: "string argument (separate multiple values by comma)",
+					},
+					&cli.StringFlag{
+						Name:  "int, i",
+						Usage: "integer 32 argument (separate multiple values by comma)",
+					},
+					&cli.StringFlag{
+						Name:  "float, f",
+						Usage: "float 32 argument (separate multiple values by comma)",
+					},
+					&cli.StringFlag{
+						Name:  "bool, b",
+						Usage: "boolean argument (separate multiple values by comma)",
+					},
 				},
-				cli.IntFlag{
-					Name:  "port, p",
-					Usage: "port number to run the server on",
-					Value: 9000,
-				},
+				Action: messageAction,
 			},
-			Action: serverAction,
+			{
+				Name:    "server",
+				Aliases: []string{"srv", "s"},
+				Usage:   "OSC server on localhost, prints incoming messages",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "host",
+						Usage: "host to run the server on",
+						Value: "127.0.0.1",
+					},
+					&cli.IntFlag{
+						Name:  "port, p",
+						Usage: "port number to run the server on",
+						Value: 9000,
+					},
+				},
+				Action: serverAction,
+			},
 		},
 	}
 
