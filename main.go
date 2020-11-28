@@ -10,8 +10,9 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "osc-utility",
-		Usage: "utlity for working with OSC",
+		Name:    "osc-utility",
+		Usage:   "utlity for working with OSC",
+		Version: "1.2.0",
 		Authors: []*cli.Author{
 			{
 				Name:  "72nd",
