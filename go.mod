@@ -1,4 +1,4 @@
-module gitlab.com/72th/prfm-osc
+module github.com/72nd/osc-utility
 
 go 1.13
 
