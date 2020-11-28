@@ -1,4 +1,4 @@
-package pkg
+package oscutility
 
 import (
 	"github.com/hypebeast/go-osc/osc"

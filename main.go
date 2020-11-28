@@ -1,16 +1,17 @@
 package main
 
 import (
+	"os"
+
+	"github.com/72nd/osc-utility/src"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"gitlab.com/72th/prfm-osc/pkg"
-	"os"
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "prfm-osc"
-	app.Usage = "some OSC tools for debugging and alike"
+	app.Name = "osc-utility"
+	app.Usage = "collection of tools for OSC"
 	app.Action = func(c *cli.Context) error {
 		_ = cli.ShowCommandHelp(c, c.Command.Name)
 		return nil
@@ -80,7 +81,7 @@ func main() {
 }
 
 func messageAction(c *cli.Context) error {
-	msg := pkg.Message{}
+	msg := oscutility.Message{}
 	if c.String("host") == "localhost" {
 		logrus.Info("using default host (localhost)")
 	}
@@ -105,7 +106,7 @@ func messageAction(c *cli.Context) error {
 }
 
 func serverAction(c *cli.Context) error {
-	srv := pkg.Server{}
+	srv := oscutility.Server{}
 	srv.Host = c.String("host")
 	if srv.Host == "127.0.0.1" {
 		logrus.Info("using default host (127.0.0.1)")
