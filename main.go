@@ -101,11 +101,12 @@ func messageAction(c *cli.Context) error {
 	}
 	msg.Host = c.String("host")
 
-	if c.Int("port") == 9000 {
-		logrus.Info("using default port (9000)")
-	}
 	msg.Port = c.Int("port")
 
+	if c.Int("port") == 0 {
+		logrus.Error("no port specified (--port)")
+		return nil
+	}
 	if c.String("address") == "" {
 		logrus.Error("no address specified (--address)")
 		return nil
@@ -126,8 +127,9 @@ func serverAction(c *cli.Context) error {
 		logrus.Info("using default host (127.0.0.1)")
 	}
 	srv.Port = c.Int("port")
-	if c.Int("port") == 9000 {
-		logrus.Info("using default port (9000)")
+	if c.Int("port") == 0 {
+		logrus.Error("no port specified (--port)")
+		return nil
 	}
 	srv.Serve()
 	return nil
