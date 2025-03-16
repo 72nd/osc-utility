@@ -12,7 +12,7 @@ func main() {
 	app := &cli.App{
 		Name:    "osc-utility",
 		Usage:   "utlity for working with OSC",
-		Version: "1.2.0",
+		Version: "0.2.1",
 		Authors: []*cli.Author{
 			{
 				Name:  "72nd",
@@ -112,10 +112,18 @@ func messageAction(c *cli.Context) error {
 		return nil
 	}
 	msg.Address = c.String("address")
-	msg.SetBooleans(c.String("bool"))
-	msg.SetStrings(c.String("string"))
-	msg.SetIntegers(c.String("int"))
-	msg.SetFloats(c.String("float"))
+	if c.IsSet("bool") {
+		msg.SetBooleans(c.String("bool"))
+	}
+	if c.IsSet("string") {
+		msg.SetStrings(c.String("string"))
+	}
+	if c.IsSet("int") {
+		msg.SetIntegers(c.String("int"))
+	}
+	if c.IsSet("float") {
+		msg.SetFloats(c.String("float"))
+	}
 	msg.Send()
 	return nil
 }
