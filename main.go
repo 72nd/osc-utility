@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/72nd/osc-utility/src"
+	oscutility "github.com/72nd/osc-utility/src"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
@@ -50,14 +50,14 @@ func main() {
 						Aliases: []string{"str", "s"},
 						Usage:   "string argument (separate multiple values by comma)",
 					},
-					&cli.StringFlag{
-						Name:    "int, i",
-						Aliases: []string{"int", "i"},
+					&cli.IntFlag{
+						Name:    "int",
+						Aliases: []string{"i"},
 						Usage:   "integer 32 argument (separate multiple values by comma)",
 					},
 					&cli.StringFlag{
-						Name:    "float, f",
-						Aliases: []string{"float", "f"},
+						Name:    "float",
+						Aliases: []string{"f"},
 						Usage:   "float 32 argument (separate multiple values by comma)",
 					},
 					&cli.StringFlag{
