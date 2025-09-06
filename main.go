@@ -12,7 +12,7 @@ func main() {
 	app := &cli.App{
 		Name:    "osc-utility",
 		Usage:   "utlity for working with OSC",
-		Version: "0.2.1",
+		Version: "0.2.2",
 		Authors: []*cli.Author{
 			{
 				Name:  "72nd",
