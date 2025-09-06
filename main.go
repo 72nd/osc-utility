@@ -50,7 +50,7 @@ func main() {
 						Aliases: []string{"str", "s"},
 						Usage:   "string argument (separate multiple values by comma)",
 					},
-					&cli.IntFlag{
+					&cli.StringFlag{
 						Name:    "int",
 						Aliases: []string{"i"},
 						Usage:   "integer 32 argument (separate multiple values by comma)",
