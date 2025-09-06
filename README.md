@@ -78,6 +78,39 @@ osc-utility server --port 9000
 You will now see all incoming messages.
 
 
+## Logging and Output
+
+### JSON Output
+
+When using the `--json-log` flag, the output will be in JSON format. This can be useful for parsing the output with tools like [jq](https://stedolan.github.io/jq/) or incorporating osc-utility into other tools. For example `osc-utility --json-log server --port 9000` will output something like this:
+
+```json
+{
+    "time": "2025-09-06T14:18:30.207864+01:00",
+    "level": "INFO",
+    "msg": "new message",
+    "address": "/channel/1",
+    "booleans": [
+        false,
+        true
+    ],
+    "strings": [
+        "Hello",
+        "World"
+    ],
+    "integers": [
+        2,
+        8
+    ],
+    "floats": [
+        23.42
+    ]
+}
+```
+
+Please note that with the server command in JSON mode, after starting the server, no output is provided indicating which host and port the server is running on.
+
+
 ### Debugging
 
 To enable debug logging, run the utility with the `--debug` flag.

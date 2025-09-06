@@ -32,11 +32,20 @@ func main() {
 				Name:  "debug",
 				Usage: "enable debug logging",
 			},
+			&cli.BoolFlag{
+				Name:  "json-log",
+				Usage: "output logs in json format",
+			},
 		},
 		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 			if cmd.Bool("debug") {
 				slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 					Level: slog.LevelDebug,
+				})))
+			}
+			if cmd.Bool("json-log") {
+				slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
+					Level: slog.LevelInfo,
 				})))
 			}
 			return ctx, nil
@@ -143,7 +152,7 @@ func serverAction(ctx context.Context, cmd *cli.Command) error {
 	srv := oscutility.Server{}
 	srv.Host = cmd.String("host")
 	srv.Port = cmd.Int("port")
-	srv.Serve()
+	srv.Serve(!cmd.Bool("json-log"))
 	return nil
 }
 

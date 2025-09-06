@@ -15,7 +15,7 @@ type Server struct {
 	Port int
 }
 
-func (s *Server) Serve() {
+func (s *Server) Serve(showInfo bool) {
 	d := osc.NewStandardDispatcher()
 	if err := d.AddMsgHandler("*", serverHandler); err != nil {
 		slog.Error(err.Error())
@@ -29,7 +29,9 @@ func (s *Server) Serve() {
 			slog.Error(err.Error())
 		}
 	}()
-	slog.Info(fmt.Sprintf("OSC server runs on %s with port %d, Q + <Enter> to exit", s.Host, s.Port))
+	if showInfo {
+		slog.Info(fmt.Sprintf("OSC server runs on %s with port %d, Q + <Enter> to exit", s.Host, s.Port))
+	}
 	promptForExit()
 }
 
