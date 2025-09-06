@@ -2,13 +2,21 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"log/slog"
 	"net/mail"
 	"os"
+	"slices"
+	"strings"
 
 	oscutility "github.com/72nd/osc-utility/src"
 	"github.com/urfave/cli/v3"
+)
+
+var (
+	BoolTrue  = []string{"true", "t", "1"}
+	BoolFalse = []string{"false", "f", "0"}
 )
 
 func main() {
@@ -40,15 +48,14 @@ func main() {
 				Usage:   "send a message to a OSC server",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name:     "host",
-						Usage:    "host of the OSC server",
-						Required: true,
+						Name:  "host",
+						Usage: "host of the OSC server",
 					},
 					&cli.IntFlag{
-						Name:    "port",
-						Aliases: []string{"p"},
-						Usage:   "port of the OSC server",
-						Value:   9000,
+						Name:     "port",
+						Aliases:  []string{"p"},
+						Usage:    "port of the OSC server",
+						Required: true,
 					},
 					&cli.StringFlag{
 						Name:     "address",
@@ -56,25 +63,25 @@ func main() {
 						Usage:    "address of the message",
 						Required: true,
 					},
-					&cli.StringFlag{
+					&cli.StringSliceFlag{
 						Name:    "string",
 						Aliases: []string{"str", "s"},
-						Usage:   "string argument (separate multiple values by comma)",
+						Usage:   "string argument(s)",
 					},
-					&cli.IntFlag{
+					&cli.Int32SliceFlag{
 						Name:    "int",
 						Aliases: []string{"i"},
-						Usage:   "integer 32 argument (separate multiple values by comma)",
+						Usage:   "integer 32 argument(s)",
 					},
-					&cli.StringFlag{
+					&cli.Float32SliceFlag{
 						Name:    "float",
 						Aliases: []string{"f"},
-						Usage:   "float 32 argument (separate multiple values by comma)",
+						Usage:   "float 32 argument(s)",
 					},
-					&cli.StringFlag{
+					&cli.StringSliceFlag{
 						Name:    "bool",
 						Aliases: []string{"b"},
-						Usage:   "boolean argument (separate multiple values by comma)",
+						Usage:   "boolean argument(s)",
 					},
 				},
 				Action: messageAction,
@@ -90,10 +97,10 @@ func main() {
 						Value: "127.0.0.1",
 					},
 					&cli.IntFlag{
-						Name:    "port",
-						Aliases: []string{"p"},
-						Usage:   "port number to run the server on",
-						Value:   9000,
+						Name:     "port",
+						Aliases:  []string{"p"},
+						Usage:    "port number to run the server on",
+						Required: true,
 					},
 				},
 				Action: serverAction,
@@ -107,27 +114,27 @@ func main() {
 }
 
 func messageAction(ctx context.Context, cmd *cli.Command) error {
-	msg := oscutility.Message{}
-	if cmd.String("host") == "localhost" {
-		slog.Info("using default host (localhost)")
+	host := cmd.String("host")
+	if !cmd.IsSet("host") {
+		slog.Info("no host provided, using default (127.0.0.1)")
+		host = "127.0.0.1"
 	}
-	msg.Host = cmd.String("host")
 
-	msg.Port = cmd.Int("port")
+	booleans, err := parseBoolArg(cmd.StringSlice("bool"))
+	if err != nil {
+		return err
+	}
 
-	msg.Address = cmd.String("address")
-	if cmd.IsSet("bool") {
-		msg.SetBooleans(cmd.String("bool"))
+	msg := oscutility.Message{
+		Host:     host,
+		Port:     cmd.Int("port"),
+		Address:  cmd.String("address"),
+		Strings:  cmd.StringSlice("string"),
+		Integers: cmd.Int32Slice("int"),
+		Floats:   cmd.Float32Slice("float"),
+		Booleans: booleans,
 	}
-	if cmd.IsSet("string") {
-		msg.SetStrings(cmd.String("string"))
-	}
-	if cmd.IsSet("int") {
-		msg.SetIntegers(cmd.String("int"))
-	}
-	if cmd.IsSet("float") {
-		msg.SetFloats(cmd.String("float"))
-	}
+
 	msg.Send()
 	return nil
 }
@@ -138,4 +145,20 @@ func serverAction(ctx context.Context, cmd *cli.Command) error {
 	srv.Port = cmd.Int("port")
 	srv.Serve()
 	return nil
+}
+
+func parseBoolArg(arg []string) ([]bool, error) {
+	var rsl []bool
+	for _, value := range arg {
+		if slices.Contains(BoolTrue, value) {
+			rsl = append(rsl, true)
+			continue
+		}
+		if slices.Contains(BoolFalse, value) {
+			rsl = append(rsl, false)
+			continue
+		}
+		return nil, fmt.Errorf("invalid boolean value: %s, use one of [%s] for true or [%s] for false", value, strings.Join(BoolTrue, ", "), strings.Join(BoolFalse, ", "))
+	}
+	return rsl, nil
 }
