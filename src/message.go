@@ -1,11 +1,12 @@
 package oscutility
 
 import (
+	"fmt"
+	"log/slog"
 	"strconv"
 	"strings"
 
 	"github.com/hypebeast/go-osc/osc"
-	"github.com/sirupsen/logrus"
 )
 
 type Message struct {
@@ -34,7 +35,7 @@ func (m *Message) SetIntegers(input string) {
 	for _, part := range parts {
 		value, err := strconv.ParseInt(part, 0, 32)
 		if err != nil {
-			logrus.Warnf("argument %s could not be parsed as a int32, ignoring this one", part)
+			slog.Warn(fmt.Sprintf("argument %s could not be parsed as a int32, ignoring this one", part))
 			continue
 		}
 		m.Integers = append(m.Integers, int32(value))
@@ -49,7 +50,7 @@ func (m *Message) SetFloats(input string) {
 	for _, part := range parts {
 		value, err := strconv.ParseFloat(part, 32)
 		if err != nil {
-			logrus.Warnf("argument %s could not be parsed as a float, ignoring this one", part)
+			slog.Warn(fmt.Sprintf("argument %s could not be parsed as a float, ignoring this one", part))
 			continue
 		}
 		m.Floats = append(m.Floats, float32(value))
@@ -69,7 +70,7 @@ func (m *Message) SetBooleans(input string) {
 		case "false", "f", "0":
 			value = false
 		default:
-			logrus.Warnf("argument %s could not be parsed as boolean, ignoring this one", part)
+			slog.Warn(fmt.Sprintf("argument %s could not be parsed as boolean, ignoring this one", part))
 			continue
 		}
 		m.Booleans = append(m.Booleans, value)
@@ -92,6 +93,6 @@ func (m *Message) Send() {
 		msg.Append(value)
 	}
 	if err := client.Send(msg); err != nil {
-		logrus.Error(err)
+		slog.Error(err.Error())
 	}
 }

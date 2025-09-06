@@ -2,11 +2,12 @@ package oscutility
 
 import (
 	"bufio"
+	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/hypebeast/go-osc/osc"
-	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
@@ -17,7 +18,7 @@ type Server struct {
 func (s *Server) Serve() {
 	d := osc.NewStandardDispatcher()
 	if err := d.AddMsgHandler("*", serverHandler); err != nil {
-		logrus.Error(err)
+		slog.Error(err.Error())
 	}
 	srv := &osc.Server{
 		Addr:       fmt.Sprintf("%s:%d", s.Host, s.Port),
@@ -25,16 +26,16 @@ func (s *Server) Serve() {
 	}
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-			logrus.Error(err)
+			slog.Error(err.Error())
 		}
 	}()
-	logrus.Infof("OSC server runs on %s with port %d, Q + <Enter> to exit", s.Host, s.Port)
+	slog.Info(fmt.Sprintf("OSC server runs on %s with port %d, Q + <Enter> to exit", s.Host, s.Port))
 	promptForExit()
 }
 
 func serverHandler(msg *osc.Message) {
-	fields := logrus.Fields{
-		"address": msg.Address,
+	attrs := []slog.Attr{
+		slog.String("address", msg.Address),
 	}
 	var booleans []bool
 	var strings []string
@@ -56,22 +57,21 @@ func serverHandler(msg *osc.Message) {
 		}
 	}
 	if len(booleans) != 0 {
-		fields["booleans"] = booleans
+		attrs = append(attrs, slog.Any("booleans", booleans))
 	}
 	if len(strings) != 0 {
-
-		fields["strings"] = strings
+		attrs = append(attrs, slog.Any("strings", strings))
 	}
 	if len(integers) != 0 {
-		fields["integers"] = integers
+		attrs = append(attrs, slog.Any("integers", integers))
 	}
 	if len(doubles) != 0 {
-		fields["doubles"] = doubles
+		attrs = append(attrs, slog.Any("doubles", doubles))
 	}
 	if len(floats) != 0 {
-		fields["floats"] = floats
+		attrs = append(attrs, slog.Any("floats", floats))
 	}
-	logrus.WithFields(fields).Info("new message")
+	slog.LogAttrs(context.Background(), slog.LevelInfo, "new message", attrs...)
 }
 
 func promptForExit() {
