@@ -63,3 +63,12 @@ osc-utility server --port 9000
 ```
 
 You will now see all incoming messages.
+
+
+### Debugging
+
+To enable debug logging, run the utility with the `--debug` flag.
+
+```shell script
+osc-utility --debug
+```

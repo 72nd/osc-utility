@@ -95,4 +95,14 @@ func (m *Message) Send() {
 	if err := client.Send(msg); err != nil {
 		slog.Error(err.Error())
 	}
+	slog.Debug(
+		"sent message",
+		"address", m.Address,
+		"host", m.Host,
+		"port", m.Port,
+		"booleans", m.Booleans,
+		"strings", m.Strings,
+		"integers", m.Integers,
+		"floats", m.Floats,
+	)
 }

@@ -19,6 +19,20 @@ func main() {
 		Authors: []any{
 			mail.Address{Name: "72nd", Address: "msg@frg72.com"},
 		},
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "debug",
+				Usage: "enable debug logging",
+			},
+		},
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			if cmd.Bool("debug") {
+				slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+					Level: slog.LevelDebug,
+				})))
+			}
+			return ctx, nil
+		},
 		Commands: []*cli.Command{
 			{
 				Name:    "message",

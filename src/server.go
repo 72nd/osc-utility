@@ -34,6 +34,7 @@ func (s *Server) Serve() {
 }
 
 func serverHandler(msg *osc.Message) {
+	slog.Debug("message received", "address", msg.Address, "arguments", msg.Arguments)
 	attrs := []slog.Attr{
 		slog.String("address", msg.Address),
 	}
@@ -56,21 +57,11 @@ func serverHandler(msg *osc.Message) {
 			floats = append(floats, arg)
 		}
 	}
-	if len(booleans) != 0 {
-		attrs = append(attrs, slog.Any("booleans", booleans))
-	}
-	if len(strings) != 0 {
-		attrs = append(attrs, slog.Any("strings", strings))
-	}
-	if len(integers) != 0 {
-		attrs = append(attrs, slog.Any("integers", integers))
-	}
-	if len(doubles) != 0 {
-		attrs = append(attrs, slog.Any("doubles", doubles))
-	}
-	if len(floats) != 0 {
-		attrs = append(attrs, slog.Any("floats", floats))
-	}
+	attrs = appendSlogAttrIfNotEmpty(attrs, "booleans", booleans)
+	attrs = appendSlogAttrIfNotEmpty(attrs, "strings", strings)
+	attrs = appendSlogAttrIfNotEmpty(attrs, "integers", integers)
+	attrs = appendSlogAttrIfNotEmpty(attrs, "doubles", doubles)
+	attrs = appendSlogAttrIfNotEmpty(attrs, "floats", floats)
 	slog.LogAttrs(context.Background(), slog.LevelInfo, "new message", attrs...)
 }
 
@@ -85,4 +76,11 @@ func promptForExit() {
 			fmt.Println("Q + <Enter> to exit")
 		}
 	}
+}
+
+func appendSlogAttrIfNotEmpty[T any](attrs []slog.Attr, key string, value []T) []slog.Attr {
+	if len(value) == 0 {
+		return attrs
+	}
+	return append(attrs, slog.Any(key, value))
 }
