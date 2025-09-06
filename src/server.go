@@ -3,9 +3,10 @@ package oscutility
 import (
 	"bufio"
 	"fmt"
+	"os"
+
 	"github.com/hypebeast/go-osc/osc"
 	"github.com/sirupsen/logrus"
-	"os"
 )
 
 type Server struct {
@@ -41,17 +42,17 @@ func serverHandler(msg *osc.Message) {
 	var doubles []int64
 	var floats []float32
 	for _, arg := range msg.Arguments {
-		switch arg.(type) {
+		switch arg := arg.(type) {
 		case bool:
-			booleans = append(booleans, arg.(bool))
+			booleans = append(booleans, arg)
 		case string:
-			strings = append(strings, arg.(string))
+			strings = append(strings, arg)
 		case int32:
-			integers = append(integers, arg.(int32))
+			integers = append(integers, arg)
 		case int64:
-			doubles = append(doubles, arg.(int64))
+			doubles = append(doubles, arg)
 		case float32:
-			floats = append(floats, arg.(float32))
+			floats = append(floats, arg)
 		}
 	}
 	if len(booleans) != 0 {

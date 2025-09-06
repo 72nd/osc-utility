@@ -1,10 +1,11 @@
 package oscutility
 
 import (
-	"github.com/hypebeast/go-osc/osc"
-	"github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
+
+	"github.com/hypebeast/go-osc/osc"
+	"github.com/sirupsen/logrus"
 )
 
 type Message struct {
@@ -62,11 +63,12 @@ func (m *Message) SetBooleans(input string) {
 	}
 	for _, part := range parts {
 		var value bool
-		if part == "true" || part == "t" || part == "1" {
+		switch part {
+		case "true", "t", "1":
 			value = true
-		} else if part == "false" || part == "f" || part == "0" {
+		case "false", "f", "0":
 			value = false
-		} else {
+		default:
 			logrus.Warnf("argument %s could not be parsed as boolean, ignoring this one", part)
 			continue
 		}
