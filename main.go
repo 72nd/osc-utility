@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
+	"log"
+	"log/slog"
 	"net/mail"
 	"os"
 
 	oscutility "github.com/72nd/osc-utility/src"
-	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v3"
 )
 
@@ -25,9 +26,9 @@ func main() {
 				Usage:   "send a message to a OSC server",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name:  "host",
-						Usage: "host of the OSC server",
-						Value: "localhost",
+						Name:     "host",
+						Usage:    "host of the OSC server",
+						Required: true,
 					},
 					&cli.IntFlag{
 						Name:    "port",
@@ -36,9 +37,10 @@ func main() {
 						Value:   9000,
 					},
 					&cli.StringFlag{
-						Name:    "address",
-						Aliases: []string{"adr", "a"},
-						Usage:   "address of the message",
+						Name:     "address",
+						Aliases:  []string{"adr", "a"},
+						Usage:    "address of the message",
+						Required: true,
 					},
 					&cli.StringFlag{
 						Name:    "string",
@@ -77,6 +79,7 @@ func main() {
 						Name:    "port",
 						Aliases: []string{"p"},
 						Usage:   "port number to run the server on",
+						Value:   9000,
 					},
 				},
 				Action: serverAction,
@@ -85,27 +88,19 @@ func main() {
 	}
 
 	if err := app.Run(context.Background(), os.Args); err != nil {
-		logrus.Fatal(err)
+		log.Fatal(err)
 	}
 }
 
 func messageAction(ctx context.Context, cmd *cli.Command) error {
 	msg := oscutility.Message{}
 	if cmd.String("host") == "localhost" {
-		logrus.Info("using default host (localhost)")
+		slog.Info("using default host (localhost)")
 	}
 	msg.Host = cmd.String("host")
 
 	msg.Port = cmd.Int("port")
 
-	if cmd.Int("port") == 0 {
-		logrus.Error("no port specified (--port)")
-		return nil
-	}
-	if cmd.String("address") == "" {
-		logrus.Error("no address specified (--address)")
-		return nil
-	}
 	msg.Address = cmd.String("address")
 	if cmd.IsSet("bool") {
 		msg.SetBooleans(cmd.String("bool"))
@@ -126,14 +121,7 @@ func messageAction(ctx context.Context, cmd *cli.Command) error {
 func serverAction(ctx context.Context, cmd *cli.Command) error {
 	srv := oscutility.Server{}
 	srv.Host = cmd.String("host")
-	if srv.Host == "127.0.0.1" {
-		logrus.Info("using default host (127.0.0.1)")
-	}
 	srv.Port = cmd.Int("port")
-	if cmd.Int("port") == 0 {
-		logrus.Error("no port specified (--port)")
-		return nil
-	}
 	srv.Serve()
 	return nil
 }
