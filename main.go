@@ -1,27 +1,22 @@
 package main
 
 import (
+	"context"
+	"net/mail"
 	"os"
 
 	oscutility "github.com/72nd/osc-utility/src"
 	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func main() {
-	app := &cli.App{
+	app := &cli.Command{
 		Name:    "osc-utility",
 		Usage:   "utlity for working with OSC",
-		Version: "0.2.1",
-		Authors: []*cli.Author{
-			{
-				Name:  "72nd",
-				Email: "msg@frg72.com",
-			},
-		},
-		Action: func(c *cli.Context) error {
-			_ = cli.ShowCommandHelp(c, c.Command.Name)
-			return nil
+		Version: "0.2.2",
+		Authors: []any{
+			mail.Address{Name: "72nd", Address: "msg@frg72.com"},
 		},
 		Commands: []*cli.Command{
 			{
@@ -61,7 +56,7 @@ func main() {
 						Usage:   "float 32 argument (separate multiple values by comma)",
 					},
 					&cli.StringFlag{
-						Name:    "bool, b",
+						Name:    "bool",
 						Aliases: []string{"b"},
 						Usage:   "boolean argument (separate multiple values by comma)",
 					},
@@ -89,53 +84,53 @@ func main() {
 		},
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(context.Background(), os.Args); err != nil {
 		logrus.Fatal(err)
 	}
 }
 
-func messageAction(c *cli.Context) error {
+func messageAction(ctx context.Context, cmd *cli.Command) error {
 	msg := oscutility.Message{}
-	if c.String("host") == "localhost" {
+	if cmd.String("host") == "localhost" {
 		logrus.Info("using default host (localhost)")
 	}
-	msg.Host = c.String("host")
+	msg.Host = cmd.String("host")
 
-	msg.Port = c.Int("port")
+	msg.Port = cmd.Int("port")
 
-	if c.Int("port") == 0 {
+	if cmd.Int("port") == 0 {
 		logrus.Error("no port specified (--port)")
 		return nil
 	}
-	if c.String("address") == "" {
+	if cmd.String("address") == "" {
 		logrus.Error("no address specified (--address)")
 		return nil
 	}
-	msg.Address = c.String("address")
-	if c.IsSet("bool") {
-		msg.SetBooleans(c.String("bool"))
+	msg.Address = cmd.String("address")
+	if cmd.IsSet("bool") {
+		msg.SetBooleans(cmd.String("bool"))
 	}
-	if c.IsSet("string") {
-		msg.SetStrings(c.String("string"))
+	if cmd.IsSet("string") {
+		msg.SetStrings(cmd.String("string"))
 	}
-	if c.IsSet("int") {
-		msg.SetIntegers(c.String("int"))
+	if cmd.IsSet("int") {
+		msg.SetIntegers(cmd.String("int"))
 	}
-	if c.IsSet("float") {
-		msg.SetFloats(c.String("float"))
+	if cmd.IsSet("float") {
+		msg.SetFloats(cmd.String("float"))
 	}
 	msg.Send()
 	return nil
 }
 
-func serverAction(c *cli.Context) error {
+func serverAction(ctx context.Context, cmd *cli.Command) error {
 	srv := oscutility.Server{}
-	srv.Host = c.String("host")
+	srv.Host = cmd.String("host")
 	if srv.Host == "127.0.0.1" {
 		logrus.Info("using default host (127.0.0.1)")
 	}
-	srv.Port = c.Int("port")
-	if c.Int("port") == 0 {
+	srv.Port = cmd.Int("port")
+	if cmd.Int("port") == 0 {
 		logrus.Error("no port specified (--port)")
 		return nil
 	}
