@@ -23,7 +23,7 @@ func main() {
 	app := &cli.Command{
 		Name:    "osc-utility",
 		Usage:   "utlity for working with OSC",
-		Version: "0.2.2",
+		Version: "0.3.0",
 		Authors: []any{
 			mail.Address{Name: "72nd", Address: "msg@frg72.com"},
 		},
