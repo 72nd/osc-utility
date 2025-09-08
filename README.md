@@ -9,7 +9,7 @@ osc-utility is a simple CLI tool for testing the [Open Sound Control (OSC)](http
 
 ## Breaking CLI Changes with v0.3.0
 
-In version 0.3.0, the CLI was redesigned with the intention of aligning it more closely with other CLI applications and preventing the implicit setting of flags. The principal change is that multiple values of the same type when sending messages are no longer separated by commas (e.g., `--int 3,4`), but rather the flag can be set multiple times (`--int 3 --int 4`). Users who rely on the legacy CLI may use version 0.2.2.
+In version 0.3.0, the CLI was redesigned with the intention of aligning it more closely with other CLI applications and preventing the implicit setting of flags. The principal change is that multiple values of the same type when sending messages are no longer separated by commas (e.g., `--int 3,4`), but rather the flag can be set multiple times (`--int 3 --int 4`). Users who rely on the legacy CLI may use version [0.2.2](https://github.com/72nd/osc-utility/releases/tag/v0.2.2a).
 
 
 ## Installation
