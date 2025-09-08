@@ -14,7 +14,7 @@ In version 0.3.0, the CLI was redesigned with the intention of aligning it more 
 
 ## Installation
 
-Just head to the release section on the right and download the executable for your system. You can then execute it right away.
+Just head to the release section on the right (or just click [here](https://github.com/72nd/osc-utility/releases/latest) for the latest release) and download the executable for your system. You can then execute it right away.
 
 
 ## Usage
