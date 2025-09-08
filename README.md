@@ -82,7 +82,7 @@ You will now see all incoming messages.
 
 ### JSON Output
 
-When using the `--json-log` flag, the output will be in JSON format. This can be useful for parsing the output with tools like [jq](https://stedolan.github.io/jq/) or incorporating osc-utility into other tools. For example `osc-utility --json-log server --port 9000` will output something like this:
+When using the `--json-log` flag, the output will be in JSON format. This can be useful for parsing the output with tools like [jq](https://stedolan.github.io/jq/) or incorporating osc-utility into other tools. For example `osc-utility --json-log server --port 9000` will output something along these lines when a new message arrives:
 
 ```json
 {
@@ -109,7 +109,6 @@ When using the `--json-log` flag, the output will be in JSON format. This can be
 ```
 
 Please note that with the server command in JSON mode, after starting the server, no output is provided indicating which host and port the server is running on.
-
 
 ### Debugging
 
